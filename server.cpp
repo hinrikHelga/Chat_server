@@ -6,9 +6,15 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <arpa/inet.h>
+#include <string>
+
+
+using namespace std;
 
 #define PORT    5555
 #define MAXMSG  512
+
 
 
 
@@ -37,6 +43,32 @@ int read_from_client (int filedes)
 }
 
 
+int make_socket (uint16_t port)
+{
+  int sock;
+  struct sockaddr_in sa;
+
+  /* Create the socket. */
+  sock = socket (PF_INET, SOCK_STREAM, 0);
+  if (sock < 0)
+    {
+      perror ("socket");
+      exit (EXIT_FAILURE);
+    }
+
+  /* Give the socket a name. */
+  sa.sin_family = AF_INET;
+  sa.sin_port = htons (port);
+  sa.sin_addr.s_addr = htonl (INADDR_ANY);
+  if (bind (sock, (struct sockaddr *) &sa, sizeof (sa)) < 0)
+    {
+      perror ("perrrrrrror");
+      exit (EXIT_FAILURE);
+    }
+
+  return sock;
+}
+
 int main (void)
 {
   extern int make_socket (uint16_t port);
@@ -44,7 +76,7 @@ int main (void)
   fd_set active_fd_set, read_fd_set;
   int i;
   struct sockaddr_in clientname;
-  size_t size;
+  socklen_t size;
 
   /* Create the socket and set it up to accept connections. */
   sock = make_socket (PORT);
@@ -75,12 +107,10 @@ int main (void)
             if (i == sock)
               {
                 /* Connection request on original socket. */
-                int new;
+                int conn;
                 size = sizeof (clientname);
-                new = accept (sock,
-                              (struct sockaddr *) &clientname,
-                              &size);
-                if (new < 0)
+                conn = accept (sock, (struct sockaddr *) &clientname, &size);
+                if (conn < 0)
                   {
                     perror ("accept");
                     exit (EXIT_FAILURE);
@@ -89,7 +119,7 @@ int main (void)
                          "Server: connect from host %s, port %hd.\n",
                          inet_ntoa (clientname.sin_addr),
                          ntohs (clientname.sin_port));
-                FD_SET (new, &active_fd_set);
+                FD_SET (conn, &active_fd_set);
               }
             else
               {
