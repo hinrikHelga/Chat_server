@@ -16,10 +16,10 @@ using namespace std;
 #define MAXMSG  512
 
 
-void client_commands(int conn, int filedes, char buffer[MAXMSG]) {
+void client_commands(int filedes, char buffer[MAXMSG]) {
   if(buffer[0] == 'L' && buffer[1] == 'E' && buffer[2] == 'A' &&
      buffer[3] == 'V' && buffer[4] == 'E') {
-      fprintf (stderr, "komst i iffuna\n");
+      shutdown(filedes, SHUT_RDWR);
   }
 }
 
@@ -43,6 +43,7 @@ int read_from_client (int filedes)
     {
       /* Data read. */
       fprintf (stderr, "Server: got message: `%s'\n", buffer);
+      client_commands(filedes, buffer);
       return 0;
     }
 }
