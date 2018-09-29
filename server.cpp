@@ -16,7 +16,12 @@ using namespace std;
 #define MAXMSG  512
 
 
-
+void client_commands(int conn, int filedes, char buffer[MAXMSG]) {
+  if(buffer[0] == 'L' && buffer[1] == 'E' && buffer[2] == 'A' &&
+     buffer[3] == 'V' && buffer[4] == 'E') {
+      fprintf (stderr, "komst i iffuna\n");
+  }
+}
 
 
 int read_from_client (int filedes)
