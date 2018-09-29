@@ -17,6 +17,7 @@ using namespace std;
 
 
 void client_commands(int filedes, char buffer[MAXMSG]) {
+  /* Disconnect client. */
   if(buffer[0] == 'L' && buffer[1] == 'E' && buffer[2] == 'A' &&
      buffer[3] == 'V' && buffer[4] == 'E') {
       shutdown(filedes, SHUT_RDWR);
@@ -24,11 +25,13 @@ void client_commands(int filedes, char buffer[MAXMSG]) {
 }
 
 
+
 int read_from_client (int filedes)
 {
   char buffer[MAXMSG];
   int nbytes;
 
+  /* Read message into an array. */
   nbytes = read (filedes, buffer, MAXMSG);
   if (nbytes < 0)
     {
@@ -41,7 +44,7 @@ int read_from_client (int filedes)
     return -1;
   else
     {
-      /* Data read. */
+      /* Data read and check client commands. */
       fprintf (stderr, "Server: got message: `%s'\n", buffer);
       client_commands(filedes, buffer);
       return 0;
