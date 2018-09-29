@@ -11,6 +11,7 @@ int main()
 	int fd; // Socket file descriptor
 	char server_response[512] = ""; // Store messages sent by the server.
 
+
 	fd = socket(AF_INET, SOCK_STREAM, 0);
 	serv.sin_family = AF_INET;
 	serv.sin_port = htons(5555);
@@ -22,7 +23,7 @@ int main()
 	    printf("Enter a message: ");
 	    fgets(server_response, 512, stdin);
 	    send(fd, server_response, strlen(server_response), 0);
-	}
+	    printf("%s\n", server_response);	}
 
 	return 0;
 }
